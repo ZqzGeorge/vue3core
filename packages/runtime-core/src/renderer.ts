@@ -1792,7 +1792,7 @@ function baseCreateRenderer(
     slotScopeIds: string[] | null,
     optimized: boolean,
   ) => {
-    let i = 0
+    let i = 0 // 指向两组子节点的开头
     const l2 = c2.length
     let e1 = c1.length - 1 // prev ending index
     let e2 = l2 - 1 // next ending index
@@ -1805,6 +1805,7 @@ function baseCreateRenderer(
       const n2 = (c2[i] = optimized
         ? cloneIfMounted(c2[i] as VNode)
         : normalizeVNode(c2[i]))
+      // isSameVNodeType主要用途return n1.type === n2.type && n1.key === n2.key
       if (isSameVNodeType(n1, n2)) {
         patch(
           n1,
