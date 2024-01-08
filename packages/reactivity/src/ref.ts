@@ -109,7 +109,7 @@ export function isRef(r: any): r is Ref {
 export function ref<T>(value: T): Ref<UnwrapRef<T>>
 export function ref<T = any>(): Ref<T | undefined>
 export function ref(value?: unknown) {
-  return createRef(value, false)
+  return createRef(value, false) // false 是否浅复制
 }
 
 declare const ShallowRefMarker: unique symbol
@@ -147,6 +147,7 @@ export function shallowRef(value?: unknown) {
 
 function createRef(rawValue: unknown, shallow: boolean) {
   if (isRef(rawValue)) {
+    // 是否是ref对象 如果是 则 直接返回
     return rawValue
   }
   return new RefImpl(rawValue, shallow)

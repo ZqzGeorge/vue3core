@@ -1917,7 +1917,7 @@ function baseCreateRenderer(
               `Make sure keys are unique.`,
             )
           }
-          keyToNewIndexMap.set(nextChild.key, i)
+          keyToNewIndexMap.set(nextChild.key, i) // 新children的key-索引 映射表 快速填充 newIndexToOldIndexMap
         }
       }
 
@@ -1925,7 +1925,7 @@ function baseCreateRenderer(
       // matching nodes & remove nodes that are no longer present
       let j
       let patched = 0
-      const toBePatched = e2 - s2 + 1
+      const toBePatched = e2 - s2 + 1 // 新的一组子节点在经过预处理之后剩余未处理节点的数量
       let moved = false
       // used to track whether any node has moved
       let maxNewIndexSoFar = 0
@@ -1934,19 +1934,21 @@ function baseCreateRenderer(
       // and oldIndex = 0 is a special value indicating the new node has
       // no corresponding old node.
       // used for determining longest stable subsequence
-      const newIndexToOldIndexMap = new Array(toBePatched)
+      const newIndexToOldIndexMap = new Array(toBePatched) // 新的一组子节点中的节点在旧的一组子节点中的位置索引
       for (i = 0; i < toBePatched; i++) newIndexToOldIndexMap[i] = 0
 
       for (i = s1; i <= e1; i++) {
+        // 遍历一组旧节点中剩余未处理的节点
         const prevChild = c1[i]
         if (patched >= toBePatched) {
+          // 仍有旧节点未处理
           // all new children have been patched so this can only be a removal
           unmount(prevChild, parentComponent, parentSuspense, true)
           continue
         }
         let newIndex
         if (prevChild.key != null) {
-          newIndex = keyToNewIndexMap.get(prevChild.key)
+          newIndex = keyToNewIndexMap.get(prevChild.key) // 通过索引表快速找到新的一组字节点中具有相同key值的节点位置
         } else {
           // key-less node, try to locate a key-less node of the same type
           for (j = s2; j <= e2; j++) {
@@ -1986,7 +1988,7 @@ function baseCreateRenderer(
       // 5.3 move and mount
       // generate longest stable subsequence only when nodes have moved
       const increasingNewIndexSequence = moved
-        ? getSequence(newIndexToOldIndexMap)
+        ? getSequence(newIndexToOldIndexMap) // 返回结果是最长递增子序列中的元素在 source 数组中的位置索引
         : EMPTY_ARR
       j = increasingNewIndexSequence.length - 1
       // looping backwards so that we can use last patched node as anchor
@@ -1996,6 +1998,7 @@ function baseCreateRenderer(
         const anchor =
           nextIndex + 1 < l2 ? (c2[nextIndex + 1] as VNode).el : parentAnchor
         if (newIndexToOldIndexMap[i] === 0) {
+          // newIndexToOldIndexMap[i]则这个节点为全新的节点，直接挂在
           // mount new
           patch(
             null,
