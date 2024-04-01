@@ -74,7 +74,6 @@ export class ReactiveEffect<T = any> {
   ) {
     recordEffectScope(this, scope)
   }
-
   public get dirty() {
     if (
       this._dirtyLevel === DirtyLevels.MaybeDirty_ComputedSideEffect ||
@@ -104,6 +103,7 @@ export class ReactiveEffect<T = any> {
   }
 
   run() {
+    // this 指向_effect实例
     this._dirtyLevel = DirtyLevels.NotDirty
     if (!this.active) {
       return this.fn()
@@ -113,9 +113,9 @@ export class ReactiveEffect<T = any> {
     try {
       shouldTrack = true
       activeEffect = this
-      this._runnings++
+      this._runnings++ //
       preCleanupEffect(this)
-      return this.fn()
+      return this.fn() // 触发传入的匿名函数
     } finally {
       postCleanupEffect(this)
       this._runnings--
@@ -193,7 +193,9 @@ export interface ReactiveEffectRunner<T = any> {
 export function effect<T = any>(
   fn: () => T,
   options?: ReactiveEffectOptions,
+  // ReactiveEffectOptions： lazy scheduler scope allowRecurse onStop onTrack onTrigger
 ): ReactiveEffectRunner {
+  // console.log(fn, 'ReactiveEffectRunner', (fn as ReactiveEffectRunner).effect instanceof ReactiveEffect)
   if ((fn as ReactiveEffectRunner).effect instanceof ReactiveEffect) {
     fn = (fn as ReactiveEffectRunner).effect.fn
   }
@@ -207,6 +209,7 @@ export function effect<T = any>(
     extend(_effect, options)
     if (options.scope) recordEffectScope(_effect, options.scope)
   }
+
   if (!options || !options.lazy) {
     _effect.run()
   }
@@ -260,6 +263,7 @@ export function pauseScheduling() {
 export function resetScheduling() {
   pauseScheduleStack--
   while (!pauseScheduleStack && queueEffectSchedulers.length) {
+    // 触发副作用函数
     queueEffectSchedulers.shift()!()
   }
 }

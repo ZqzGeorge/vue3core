@@ -36,6 +36,7 @@ export function track(target: object, type: TrackOpTypes, key: unknown) {
     if (!depsMap) {
       targetMap.set(target, (depsMap = new Map()))
     }
+
     let dep = depsMap.get(key)
     if (!dep) {
       depsMap.set(key, (dep = createDep(() => depsMap!.delete(key))))
@@ -75,7 +76,6 @@ export function trigger(
     // never been tracked
     return
   }
-
   let deps: (Dep | undefined)[] = []
   if (type === TriggerOpTypes.CLEAR) {
     // collection being cleared

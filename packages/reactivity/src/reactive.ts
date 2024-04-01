@@ -241,7 +241,7 @@ export function shallowReadonly<T extends object>(target: T): Readonly<T> {
 
 function createReactiveObject(
   target: Target,
-  isReadonly: boolean,
+  isReadonly: boolean, // reactive传 false
   baseHandlers: ProxyHandler<any>,
   collectionHandlers: ProxyHandler<any>,
   proxyMap: WeakMap<Target, any>,
@@ -261,7 +261,7 @@ function createReactiveObject(
     return target
   }
   // target already has corresponding Proxy
-  const existingProxy = proxyMap.get(target)
+  const existingProxy = proxyMap.get(target) // 检查是否已经存在该对象的代理（proxy）
   if (existingProxy) {
     return existingProxy
   }

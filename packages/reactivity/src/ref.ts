@@ -164,8 +164,9 @@ class RefImpl<T> {
     value: T,
     public readonly __v_isShallow: boolean,
   ) {
-    this._rawValue = __v_isShallow ? value : toRaw(value)
-    this._value = __v_isShallow ? value : toReactive(value)
+    this._rawValue = __v_isShallow ? value : toRaw(value) // 原始数据
+    this._value = __v_isShallow ? value : toReactive(value) // 分别对与对象类型和其他类型数据进行分类逻辑操作
+    // 对象类型会传入reactive()方法中，进行封装， 基本类型直接返回值
   }
 
   get value() {

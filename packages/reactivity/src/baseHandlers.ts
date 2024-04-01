@@ -86,9 +86,10 @@ function hasOwnProperty(this: object, key: string) {
   return obj.hasOwnProperty(key)
 }
 
+// implements ProxyHandler 继承且严格执行对象内部方法且不允许在子类修改
 class BaseReactiveHandler implements ProxyHandler<Target> {
   constructor(
-    protected readonly _isReadonly = false,
+    protected readonly _isReadonly = false, // protected readonly 受保护的只读属性，只允许类内部访问或者子类继承super中访问
     protected readonly _isShallow = false,
   ) {}
 
@@ -163,9 +164,10 @@ class BaseReactiveHandler implements ProxyHandler<Target> {
   }
 }
 
+// new MutableReactiveHandler()
 class MutableReactiveHandler extends BaseReactiveHandler {
   constructor(isShallow = false) {
-    super(false, isShallow)
+    super(false, isShallow) // 继承 _isReadonly
   }
 
   set(
